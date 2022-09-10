@@ -4,6 +4,9 @@
 
 ## Project Setup
 
+![alt text](./design.svg)
+
+
 **Bring up the API**:
 
 ```console
