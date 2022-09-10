@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - /DATA/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    networks:
+      - chat_system_network
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+  
+  web:
+    build: .
+    command: "sh runner.sh"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+      - redis
+      - db
+    networks:
+      - chat_system_network
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass redis-secret
+    volumes: 
+      - /DATA/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - chat_system_network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - rabbitmq_data:/var/lib/rabbitmq/
+        - rabbitmq_log:/var/log/rabbitmq/
+    networks:
+        - chat_system_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.1
+    container_name: elasticsearch
+    environment:
+      - cluster.name=chatsystem
+      - node.name=chatsystem01
+      - bootstrap.memory_lock=false
+      - discovery.zen.minimum_master_nodes=1
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - chat_system_network
+
+volumes:
+    rabbitmq_data:
+    rabbitmq_log:
+    mysql:
+    elasticsearch:
+
+
+networks:
+  chat_system_network:
