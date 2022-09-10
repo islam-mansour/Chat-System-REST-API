@@ -3,8 +3,6 @@ require 'elasticsearch/model'
 class Message < ApplicationRecord
   belongs_to :chat
 
-  add_index :chat, :chat_id
-
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
 
