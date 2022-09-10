@@ -33,13 +33,13 @@ module Api
             api :GET, '/applications/<token>/chats', 'Shows all chats for this application'  
             returns array_of: :application, code: 200, desc: 'All chats'
             def chats
-                application = Application.where(token: params[:token])
+                application = Application.includes(:chats).where(token: params[:token])
                 if !application.exists?
                     render json: {status: "NOT_FOUND"}, status: 404
                     return
                 end
 
-                chats = Chat.where(application_id: application.first['id'])
+                chats = application.first.chats
                 chats_dto = Array.new
                 chats.each do |chat|
                     chats_dto.push(ChatDto.new(chat))

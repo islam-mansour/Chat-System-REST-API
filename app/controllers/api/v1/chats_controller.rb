@@ -41,13 +41,13 @@ module Api
                     return
                 end
 
-                chat = Chat.where(application_id: application.first['id'], number: params[:number])
+                chat = application.first.chats.includes(:messages).where(number: params[:number])
                 if !chat.exists?
                     render json: {status: "NOT_FOUND"}, status: 404
                     return
                 end
 
-                messages = Message.where(chat_id: chat.first['id'])
+                messages = chat.first.messages
                 messages_dto = Array.new
                 messages.each do |chat|
                     messages_dto.push(MessageDto.new(chat))
