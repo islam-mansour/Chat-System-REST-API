@@ -35,13 +35,13 @@ module Api
             api :GET, '/applications/<token>/chats/<number>/messages', 'Shows all messages belongs to this chat'  
             returns array_of: :chat, code: 200, desc: 'All applications'
             def messages
-                application = Application.where(token: params[:token])
+                application = Application.where(:token => params[:token])
                 if !application.exists?
                     render json: {status: "APPLICATION_NOT_FOUND"}, status: 404
                     return
                 end
 
-                chat = application.first.chats.includes(:messages).where(number: params[:number])
+                chat = application.first.chats.includes(:messages).where(:number => params[:number])
                 if !chat.exists?
                     render json: {status: "NOT_FOUND"}, status: 404
                     return
@@ -61,9 +61,9 @@ module Api
             returns array_of: :chat, code: 200, desc: 'Chat'
             def show
                 application_token, chat_number = params[:id].split('-')[0],params[:id].split('-')[1]
-                application = Application.where(token: application_token)
+                application = Application.where(:token => application_token)
                 if application.exists?
-                    chat = Chat.where(application_id: application.first['id'], number: chat_number)
+                    chat = Chat.where(:application_id => application.first['id'], number: chat_number)
                     if chat.exists?
                         render json: {status: "SUCCESS", data: ChatDtos.new(chat.first)}, status: 200
                         return
@@ -94,7 +94,7 @@ module Api
             api :DELETE, '/chats/<token>', 'Delete chat'  
             returns array_of: :chat, code: 200, desc: 'Delete chat'
             def destroy
-                chat = Chat.where(id: params[:id])
+                chat = Chat.where(:id => params[:id])
                 if chat.exists?
                     chat.first.destroy
                     render json: {status: "SUCCESS"}, status: 200

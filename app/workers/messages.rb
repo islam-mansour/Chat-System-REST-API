@@ -16,13 +16,13 @@ begin
         puts " [x] Received #{body}"
         application_token, chat_number, body, number = body.split(',')[0], body.split(',')[1], body.split(',')[2], body.split(',')[3]
 
-        application = Application.where(token: application_token)
+        application = Application.where(:token => application_token)
         if !application.exists?
             puts "Application not found"
             return
         end
     
-        chat = Chat.where(application_id: application.first['id'], number: chat_number)
+        chat = Chat.where(:application_id => application.first['id'], :number => chat_number)
         if !chat.exists?
             puts "Chat not found"
             return

@@ -16,7 +16,7 @@ begin
         puts " [x] Received #{body}"
     
         application_token, number = body.split(",")[0], body.split(",")[1].to_i
-        application = Application.where(token: application_token)
+        application = Application.where(:token => application_token)
         if !application.exists?
             puts "No such Application"
             return

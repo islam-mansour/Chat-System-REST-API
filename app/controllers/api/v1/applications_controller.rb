@@ -33,7 +33,7 @@ module Api
             api :GET, '/applications/<token>/chats', 'Shows all chats for this application'  
             returns array_of: :application, code: 200, desc: 'All chats'
             def chats
-                application = Application.includes(:chats).where(token: params[:token])
+                application = Application.includes(:chats).where(:token => params[:token])
                 if !application.exists?
                     render json: {status: "NOT_FOUND"}, status: 404
                     return
@@ -52,7 +52,7 @@ module Api
             api :GET, '/applications/<token>', 'Shows application'  
             returns array_of: :application, code: 200, desc: 'Single Application'
             def show
-                application = Application.where(token: params[:id])
+                application = Application.where(:token => params[:id])
                 if application.exists?
                     render json: {status: "SUCCESS", data: ApplicationDto.new(application.first)}, status: 200
                 else
@@ -77,7 +77,7 @@ module Api
             api :DELETE, '/applications/<token>', 'Delete applications'  
             returns array_of: :application, code: 200, desc: 'Deleted application'
             def destroy
-                application = Application.where(token: params[:id])
+                application = Application.where(:token => params[:id])
                 if application.exists?
                     application.first.destroy
                     render json: {status: "SUCCESS"}, status: 200

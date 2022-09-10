@@ -44,19 +44,19 @@ module Api
             returns array_of: :message, code: 200, desc: 'Message'
             def show
                 application_token, chat_number, message_number = params[:id].split('-')[0], params[:id].split('-')[1], params[:id].split('-')[2]
-                application = Application.where(token: application_token)
+                application = Application.where(:token => application_token)
                 if !application.exists?
                     render json: {status: "NOT_FOUND_APPLICATION"}, status: 404
                     return
                 end
 
-                chat = Chat.where(application_id: application.first['id'], number: chat_number)
+                chat = Chat.where(:application_id => application.first['id'], number: chat_number)
                 if !chat.exists?
                     render json: {status: "NOT_FOUND_CHAT"}, status: 404
                     return
                 end
 
-                message = Message.where(chat_id: chat.first['id'], number: message_number)
+                message = Message.where(:chat_id => chat.first['id'], number: message_number)
                 if !message.exists?
                     render json: {status: "NOT_FOUND_MESSAGE"}, status: 404
                     return
@@ -89,7 +89,7 @@ module Api
             api :GET, '/message/<id>', 'Delete message'  
             returns array_of: :message, code: 200, desc: 'Deleted message'
             def destroy
-                message = Message.where(id: params[:id])
+                message = Message.where(:id => params[:id])
                 if message.exists?
                     message.first.destroy
                     render json: {status: "SUCCESS"}, status: 200

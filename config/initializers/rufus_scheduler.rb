@@ -8,7 +8,7 @@ Rufus::Scheduler.singleton.every '1h' do
         if $redis.get("chats_count_application_id_" + application['id'].to_s) != nil
             count = $redis.get("chats_count_application_id_" + application['id'].to_s).to_i + 1
         else
-            count = Chat.where(application_id: application['id']).length
+            count = Chat.where(:application_id => application['id']).length
         end
 
         $redis.set("chats_count_application_id_" + application['id'].to_s, count)
@@ -28,7 +28,7 @@ Rufus::Scheduler.singleton.every '1h' do
         if $redis.get("messages_count_chat_id_" + chat['id'].to_s) != nil
             count = $redis.get("messages_count_chat_id_" + chat['id'].to_s).to_i + 1
         else
-            count = Message.where(chat_id: chat['id']).length
+            count = Message.where(:chat_id => chat['id']).length
         end
 
         $redis.set("messages_count_chat_id_" + chat['id'].to_s, count)
